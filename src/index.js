@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
+// import ColorTabs from './ColorTabs';
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+  {/* <ColorTabs />   */}
+  <App />
+
+
   </React.StrictMode>,
   document.getElementById('root')
 );
