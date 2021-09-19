@@ -1,14 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+// import App from './App';
 import reportWebVitals from './reportWebVitals';
+import GridPlay from './GridsPlay';
 // import ColorTabs from './ColorTabs';
 ReactDOM.render(
   <React.StrictMode>
   {/* <ColorTabs />   */}
-  <App />
-
+ <GridPlay />  
+ {/* <App /> */}
+ 
 
   </React.StrictMode>,
   document.getElementById('root')

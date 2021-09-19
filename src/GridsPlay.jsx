@@ -14,21 +14,29 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
 
 
-const App = () => {
+const GridPlay = () => {
+  const [value, setValue] = React.useState('1');
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [rowData1, setRowData] = useState(null);
+  
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+    setGridColumnApi(params.columnApi);
 
-//   const ColumnDefs = [
-//     {headerName: "Make", field: "make", sortable: true, filter: true},
-//     {headerName: "Model", field: "model",sortable: true, filter: true},
-//     {headerName: "Price", field: "price",sortable: true, filter: true},
-    
+    const updateData = (data) => {
+      setRowData(data);
+    };
+
+    fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
+      .then((resp) => resp.json())
+      .then((data) => updateData(data));
+  };
+// const rowData1 = [
+//   {book: "Book1", author: "Author1", price: 350},
+//   {book: "Book2", author: "Author2", price: 535},
+//   {book: "Book3", author: "Author3", price: 750}
 // ];
-const [value, setValue] = React.useState('1');
-const [gridApi, setGridApi] = useState(null);
-const rowData1 = [
-  {book: "Book1", author: "Author1", price: 350},
-  {book: "Book2", author: "Author2", price: 535},
-  {book: "Book3", author: "Author3", price: 750}
-];
 const rowData2= [
   {car: "Maruti", model: "Alto", price: 20000},
   {car: "Mercedes-Benz", model: "Class-G", price: 88000},
@@ -59,8 +67,6 @@ const rowData3 = [
       sortable: true,
       resizable: true,
       width: 150,
-      enableRowGroup: true,
-      enablePivot: true,
       enableValue: true,
     },
     debug: true,
@@ -68,15 +74,11 @@ const rowData3 = [
   };
   
   function onCbAthlete(event) {
-    gridOptions.onGridReady = () => {
-      gridOptions.columnApi.setColumnVisible('book', false);
-     // columnApi = gridOptions.columnApi;
-      
-    }
-  
-   // columnApi.setColumnVisible('book', event.target.checked);
-   // columnApi.setColumnVisible('author', event.target.checked);
+    // we only need to update one grid, as the other is a slave
+    gridColumnApi.setColumnVisible('athlete', event.target.checked);
+    gridColumnApi.setColumnVisible('age', event.target.checked);
 }
+
   return (
     <Box sx={{ width: '100%', typography: 'body1' }}>
       <TabContext value={value}>
@@ -89,6 +91,7 @@ const rowData3 = [
             <Tab label="Class Three" value="3" />
           </TabList>
         </Box>
+        {/* Tab 1 */}
         <TabPanel value="1">
                <div className="header">
                 <label>
@@ -100,42 +103,60 @@ const rowData3 = [
                 </div>
         <div className="ag-theme-balham-dark" style={{height: 400, width: 600}}>
            
-           <AgGridReact rowData={rowData1}
+           <AgGridReact 
+            floatingFiltersHeight={50}
+            onGridReady={onGridReady}
+            rowData={rowData1}
             suppressRowClickSelection={true}
-           defaultColDef={{
+            defaultColDef={{
             flex: 1,
             minWidth: 150,
             filter: true,
             sortable: true,
             floatingFilter: true,
           }}
-         
-             rowSelection="multiple" 
-          groupSelectsChildren={true}
-            //  autoGroupColumnDef={{
-            //      headerName: "Book",
-            //      field: "book",
-            //      cellRenderer:'agGroupCellRenderer',
-            //      cellRendererParams: {
-            //                     //  checkbox: true
-            //                 }
-                     
-            // }}
+            rowSelection="multiple" 
+            groupSelectsChildren={true}
             enableRangeSelection={true}
             pagination={true}
-            paginationPageSize={10}
+            paginationPageSize={30}
             >
-         <AgGridColumn   headerCheckboxSelection={true}
+         {/* <AgGridColumn   headerCheckboxSelection={true}
             checkboxSelection={true} field="book" suppressMenu={true}  ></AgGridColumn>
          <AgGridColumn  field="author" suppressMenu={true}  ></AgGridColumn>
-        <AgGridColumn  field="price" suppressMenu={true} ></AgGridColumn>
-        </AgGridReact>
+        <AgGridColumn  field="price" suppressMenu={true} ></AgGridColumn> */}
+
+            <AgGridColumn
+              headerName="Athlete"
+              field="athlete"
+              width={150}
+              suppressSizeToFit={true}
+              headerCheckboxSelection={true}
+              checkboxSelection={true}
+              resizable={true} 
+            />
+            <AgGridColumn
+              headerName="Age"
+              field="age"
+              width={90}
+              minwidth={75}
+              maxWidth={100}
+              resizable={true} 
+              
+            />
+            <AgGridColumn
+              headerName="Country"
+              field="country"
+              width={120}
+              resizable={true} 
+            />
+         </AgGridReact>
        </div>
        <div className="example-header">
           Page Size:
           <select onChange={() => onPageSizeChanged()} id="page-size">
-            <option value="10" selected={true}>
-              10
+            <option value="30" selected={true}>
+              30
             </option>
             <option value="100">100</option>
             <option value="500">500</option>
@@ -146,20 +167,21 @@ const rowData3 = [
         <TabPanel value="2"> <div className="ag-theme-balham-dark" style={{height: 400, width: 600}}>
            
            <AgGridReact rowData={rowData2}
-             rowSelection="multiple"
-             groupSelectsChildren={true}  
-             autoGroupColumnDef={{
-                 headerName: "Model",
-                 field: "model",
-                 cellRenderer:'agGroupCellRenderer',
-                 cellRendererParams: {
-                                 checkbox: true
-                            },
+                  rowSelection="multiple"
+                  groupSelectsChildren={true}  
+                  autoGroupColumnDef={{
+                  headerName: "Model",
+                  field: "model",
+                  cellRenderer:'agGroupCellRenderer',
+                  cellRendererParams: 
+                 {
+                    checkbox: true
+                 },
                            
             }}>
 
           <AgGridColumn  field="car" sortable={ true } filter={ true } resizable={true} checkboxSelection={ true } rowGroup={ true }></AgGridColumn>
-          <AgGridColumn  field="price" sortable={ true } filter={ true } resizable={true}  checkboxSelection={ true } rowGroup={ true }></AgGridColumn>
+          <AgGridColumn  field="price" sortable={ true } filter={ true } resizable={true} checkboxSelection={ true } rowGroup={ true }></AgGridColumn>
           </AgGridReact>
        </div>
        </TabPanel>
@@ -187,6 +209,5 @@ const rowData3 = [
     </Box>
   );
 }
-// render(<App />, document.getElementById('root'));
 
-export default App;
+export default GridPlay;
